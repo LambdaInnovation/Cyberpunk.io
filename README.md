@@ -1,2 +1,3 @@
 # Cyberpunk.io
-Cyberpunk-themed top-down shooter with full brew of craziness
+
+A cyberpunk-themed multiplayer top-down shooter game. In early experiment stage.
