@@ -28,7 +28,7 @@ public class Server : MonoBehaviour {
 		udp = new UdpClient(12345);
 		Debug.Log("Server thread starting");
 
-		udp.Client.Blocking = false;
+		// udp.Client.Blocking = false;
 
 		while (true) {
 			var remoteEP = new IPEndPoint(IPAddress.Any, 12345);
@@ -44,8 +44,10 @@ public class Server : MonoBehaviour {
 		}
 	}
 
+	static System.Random rand = new System.Random();
+
 	static byte R() {
-		return (byte) (10 * Random.value);
+		return (byte) rand.Next(10);
 	}
 
 }
