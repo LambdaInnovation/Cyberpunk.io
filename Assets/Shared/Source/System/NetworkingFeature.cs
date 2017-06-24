@@ -13,7 +13,7 @@ public class NetworkingFeature : Feature {
 
 	public NetworkingFeature(Contexts ctxs) : base("Networking") {
 		Add(new SendPacketSystem(ctxs, this));
-		Add(new RecvPacketSystem(this));
+		Add(new RecvPacketSystem(ctxs, this));
 	}
 
 	public override void Initialize() {
@@ -28,7 +28,7 @@ public class NetworkingFeature : Feature {
 
 }
 
-public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSystem {
+public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSystem, ICleanupSystem {
 	struct IncomingPacket {
 		public IPEndPoint source;
 		public Packet packet;
@@ -39,8 +39,11 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 
 	Queue<IncomingPacket> incomingPackets = new Queue<IncomingPacket>();
 
-	public RecvPacketSystem(NetworkingFeature feature) {
+	IGroup<GameEntity> recvGroup;
+
+	public RecvPacketSystem(Contexts ctxs, NetworkingFeature feature) {
 		this.feature = feature;
+		recvGroup = ctxs.game.GetGroup(GameMatcher.RecvPacket);
 	}
 
 	public void Initialize() {
@@ -67,6 +70,12 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 		}
 	}
 
+	public void Cleanup() {
+		foreach (var entity in recvGroup.GetEntities()) {
+			entity.Destroy();
+		}
+	}
+
 	void ListenThreadFunc() {
 		while (true) {
 			var ep = new IPEndPoint(IPAddress.Any, NetworkConfig.port);
@@ -88,12 +97,14 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 }
 
 
-public class SendPacketSystem : ReactiveSystem<GameEntity> {
+public class SendPacketSystem : ReactiveSystem<GameEntity>, ICleanupSystem {
 	
 	NetworkingFeature feature;
+	IGroup<GameEntity> sendGroup;
 
 	public SendPacketSystem(Contexts ctxs, NetworkingFeature feature) : base(ctxs.game) {
 		this.feature = feature;
+		sendGroup = ctxs.game.GetGroup(GameMatcher.PingTest);
 	}
 
     protected override ICollector<GameEntity> GetTrigger(IContext<GameEntity> context) {
@@ -111,4 +122,10 @@ public class SendPacketSystem : ReactiveSystem<GameEntity> {
 			Debug.Log("Send Packet " + comp.packet);
 		}
     }
+
+	public void Cleanup() {
+		foreach (var ent in sendGroup.GetEntities()) {
+			ent.Destroy();
+		}
+	}
 }
