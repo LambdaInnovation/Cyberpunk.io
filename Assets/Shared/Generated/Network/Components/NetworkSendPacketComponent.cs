@@ -6,13 +6,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-public partial class GameEntity {
+public partial class NetworkEntity {
 
-    public SendPacketComponent sendPacket { get { return (SendPacketComponent)GetComponent(GameComponentsLookup.SendPacket); } }
-    public bool hasSendPacket { get { return HasComponent(GameComponentsLookup.SendPacket); } }
+    public SendPacketComponent sendPacket { get { return (SendPacketComponent)GetComponent(NetworkComponentsLookup.SendPacket); } }
+    public bool hasSendPacket { get { return HasComponent(NetworkComponentsLookup.SendPacket); } }
 
     public void AddSendPacket(System.Net.IPEndPoint newTarget, Packet newPacket) {
-        var index = GameComponentsLookup.SendPacket;
+        var index = NetworkComponentsLookup.SendPacket;
         var component = CreateComponent<SendPacketComponent>(index);
         component.target = newTarget;
         component.packet = newPacket;
@@ -20,7 +20,7 @@ public partial class GameEntity {
     }
 
     public void ReplaceSendPacket(System.Net.IPEndPoint newTarget, Packet newPacket) {
-        var index = GameComponentsLookup.SendPacket;
+        var index = NetworkComponentsLookup.SendPacket;
         var component = CreateComponent<SendPacketComponent>(index);
         component.target = newTarget;
         component.packet = newPacket;
@@ -28,7 +28,7 @@ public partial class GameEntity {
     }
 
     public void RemoveSendPacket() {
-        RemoveComponent(GameComponentsLookup.SendPacket);
+        RemoveComponent(NetworkComponentsLookup.SendPacket);
     }
 }
 
@@ -40,15 +40,15 @@ public partial class GameEntity {
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-public sealed partial class GameMatcher {
+public sealed partial class NetworkMatcher {
 
-    static Entitas.IMatcher<GameEntity> _matcherSendPacket;
+    static Entitas.IMatcher<NetworkEntity> _matcherSendPacket;
 
-    public static Entitas.IMatcher<GameEntity> SendPacket {
+    public static Entitas.IMatcher<NetworkEntity> SendPacket {
         get {
             if (_matcherSendPacket == null) {
-                var matcher = (Entitas.Matcher<GameEntity>)Entitas.Matcher<GameEntity>.AllOf(GameComponentsLookup.SendPacket);
-                matcher.componentNames = GameComponentsLookup.componentNames;
+                var matcher = (Entitas.Matcher<NetworkEntity>)Entitas.Matcher<NetworkEntity>.AllOf(NetworkComponentsLookup.SendPacket);
+                matcher.componentNames = NetworkComponentsLookup.componentNames;
                 _matcherSendPacket = matcher;
             }
 

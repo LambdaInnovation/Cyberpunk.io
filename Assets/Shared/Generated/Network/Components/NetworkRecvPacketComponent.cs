@@ -6,13 +6,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-public partial class GameEntity {
+public partial class NetworkEntity {
 
-    public RecvPacketComponent recvPacket { get { return (RecvPacketComponent)GetComponent(GameComponentsLookup.RecvPacket); } }
-    public bool hasRecvPacket { get { return HasComponent(GameComponentsLookup.RecvPacket); } }
+    public RecvPacketComponent recvPacket { get { return (RecvPacketComponent)GetComponent(NetworkComponentsLookup.RecvPacket); } }
+    public bool hasRecvPacket { get { return HasComponent(NetworkComponentsLookup.RecvPacket); } }
 
     public void AddRecvPacket(System.Net.IPEndPoint newSource, Packet newPacket) {
-        var index = GameComponentsLookup.RecvPacket;
+        var index = NetworkComponentsLookup.RecvPacket;
         var component = CreateComponent<RecvPacketComponent>(index);
         component.source = newSource;
         component.packet = newPacket;
@@ -20,7 +20,7 @@ public partial class GameEntity {
     }
 
     public void ReplaceRecvPacket(System.Net.IPEndPoint newSource, Packet newPacket) {
-        var index = GameComponentsLookup.RecvPacket;
+        var index = NetworkComponentsLookup.RecvPacket;
         var component = CreateComponent<RecvPacketComponent>(index);
         component.source = newSource;
         component.packet = newPacket;
@@ -28,7 +28,7 @@ public partial class GameEntity {
     }
 
     public void RemoveRecvPacket() {
-        RemoveComponent(GameComponentsLookup.RecvPacket);
+        RemoveComponent(NetworkComponentsLookup.RecvPacket);
     }
 }
 
@@ -40,15 +40,15 @@ public partial class GameEntity {
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-public sealed partial class GameMatcher {
+public sealed partial class NetworkMatcher {
 
-    static Entitas.IMatcher<GameEntity> _matcherRecvPacket;
+    static Entitas.IMatcher<NetworkEntity> _matcherRecvPacket;
 
-    public static Entitas.IMatcher<GameEntity> RecvPacket {
+    public static Entitas.IMatcher<NetworkEntity> RecvPacket {
         get {
             if (_matcherRecvPacket == null) {
-                var matcher = (Entitas.Matcher<GameEntity>)Entitas.Matcher<GameEntity>.AllOf(GameComponentsLookup.RecvPacket);
-                matcher.componentNames = GameComponentsLookup.componentNames;
+                var matcher = (Entitas.Matcher<NetworkEntity>)Entitas.Matcher<NetworkEntity>.AllOf(NetworkComponentsLookup.RecvPacket);
+                matcher.componentNames = NetworkComponentsLookup.componentNames;
                 _matcherRecvPacket = matcher;
             }
 

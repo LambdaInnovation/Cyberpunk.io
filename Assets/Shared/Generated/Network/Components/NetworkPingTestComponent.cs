@@ -6,13 +6,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-public partial class GameEntity {
+public partial class NetworkEntity {
 
-    public PingTestComponent pingTest { get { return (PingTestComponent)GetComponent(GameComponentsLookup.PingTest); } }
-    public bool hasPingTest { get { return HasComponent(GameComponentsLookup.PingTest); } }
+    public PingTestComponent pingTest { get { return (PingTestComponent)GetComponent(NetworkComponentsLookup.PingTest); } }
+    public bool hasPingTest { get { return HasComponent(NetworkComponentsLookup.PingTest); } }
 
     public void AddPingTest(System.Net.IPEndPoint newTarget, int newTestIntervalMsec, float newCooldown) {
-        var index = GameComponentsLookup.PingTest;
+        var index = NetworkComponentsLookup.PingTest;
         var component = CreateComponent<PingTestComponent>(index);
         component.target = newTarget;
         component.testIntervalMsec = newTestIntervalMsec;
@@ -21,7 +21,7 @@ public partial class GameEntity {
     }
 
     public void ReplacePingTest(System.Net.IPEndPoint newTarget, int newTestIntervalMsec, float newCooldown) {
-        var index = GameComponentsLookup.PingTest;
+        var index = NetworkComponentsLookup.PingTest;
         var component = CreateComponent<PingTestComponent>(index);
         component.target = newTarget;
         component.testIntervalMsec = newTestIntervalMsec;
@@ -30,7 +30,7 @@ public partial class GameEntity {
     }
 
     public void RemovePingTest() {
-        RemoveComponent(GameComponentsLookup.PingTest);
+        RemoveComponent(NetworkComponentsLookup.PingTest);
     }
 }
 
@@ -42,15 +42,15 @@ public partial class GameEntity {
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-public sealed partial class GameMatcher {
+public sealed partial class NetworkMatcher {
 
-    static Entitas.IMatcher<GameEntity> _matcherPingTest;
+    static Entitas.IMatcher<NetworkEntity> _matcherPingTest;
 
-    public static Entitas.IMatcher<GameEntity> PingTest {
+    public static Entitas.IMatcher<NetworkEntity> PingTest {
         get {
             if (_matcherPingTest == null) {
-                var matcher = (Entitas.Matcher<GameEntity>)Entitas.Matcher<GameEntity>.AllOf(GameComponentsLookup.PingTest);
-                matcher.componentNames = GameComponentsLookup.componentNames;
+                var matcher = (Entitas.Matcher<NetworkEntity>)Entitas.Matcher<NetworkEntity>.AllOf(NetworkComponentsLookup.PingTest);
+                matcher.componentNames = NetworkComponentsLookup.componentNames;
                 _matcherPingTest = matcher;
             }
 

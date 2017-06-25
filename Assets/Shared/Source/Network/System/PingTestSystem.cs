@@ -5,12 +5,12 @@ using Entitas;
 using System;
 
 public class PingTestSystem : IExecuteSystem {
-    GameContext ctx;
-    IGroup<GameEntity> groupPings;
+    NetworkContext ctx;
+    IGroup<NetworkEntity> groupPings;
 
 	public PingTestSystem(Contexts ctxs) {
-        ctx = ctxs.game;
-        groupPings = ctx.GetGroup(GameMatcher.PingTest);
+        ctx = ctxs.network;
+        groupPings = ctx.GetGroup(NetworkMatcher.PingTest);
     }
 
     public void Execute() {
@@ -22,7 +22,7 @@ public class PingTestSystem : IExecuteSystem {
                 data.cooldown = data.testIntervalMsec / 1000.0f;
 
                 ctx.CreateEntity()
-                    .AddSendPacket(data.target, new Packet { packetType = PacketType.Ping, data = new byte[128] });
+                    .AddSendPacket(data.target, new Packet(PacketType.Ping, new byte[128]));
                 Debug.Log("Ping Test to " + data.target);
             }
 		}

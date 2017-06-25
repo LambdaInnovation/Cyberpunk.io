@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Net;
 using Entitas;
 
-[Game]
+[Network]
 public class PingTestComponent : IComponent {
 	public IPEndPoint target;
 

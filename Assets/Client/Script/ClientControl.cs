@@ -4,6 +4,10 @@ using UnityEngine;
 using System.Net;
 using Entitas;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public class ClientControl : MonoBehaviour {
 	Systems systems;
 
@@ -12,18 +16,18 @@ public class ClientControl : MonoBehaviour {
 
 		var ctxs = Contexts.sharedInstance;
 		systems = new Systems()
+			.Add(new PingTestSystem(ctxs))
 			.Add(new NetworkingFeature(ctxs))
-			.Add(new PingTestSystem(ctxs));
-		
-		#if (!ENTITAS_DISABLE_VISUAL_DEBUGGING && UNITY_EDITOR)
-		var observer = new Entitas.VisualDebugging.Unity.ContextObserver(ctxs.game);
-		GameObject.DontDestroyOnLoad(observer.gameObject);
-		#endif
+			.Add(new ClientConnectionSystem(ctxs));
 
 		systems.Initialize();
 
-		ctxs.game.CreateEntity()
-			.AddPingTest(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345), 1000, 1);
+		/*
+		ctxs.network.CreateEntity()
+			.AddPingTest(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345), 1000, 1); */
+
+		ctxs.network.CreateEntity()
+			.AddClientConnection(0, 0, null, 0, 0, ClientConnectionComponent.State.Disconnected);
 	}
 	
 	void FixedUpdate() {
@@ -35,3 +39,31 @@ public class ClientControl : MonoBehaviour {
 		systems.TearDown();
 	}
 }
+
+#if UNITY_EDITOR
+
+
+[CustomEditor(typeof(ClientControl))]
+[CanEditMultipleObjects]
+public class ClientControlEditor : Editor {
+	string startConnectonHost = "";
+	int startConnectionPort = 12345;
+	
+	public override void OnInspectorGUI() {
+		DrawDefaultInspector();
+		
+		if (Application.isPlaying) {
+			startConnectonHost = EditorGUILayout.TextField("Host", startConnectonHost);
+			startConnectionPort = EditorGUILayout.IntField("Port", startConnectionPort);
+
+			if (GUILayout.Button("Start Connection")) {
+				var ctx = Contexts.sharedInstance.network;
+				ctx.CreateEntity()
+					.AddClientStartConnection(new IPEndPoint(IPAddress.Parse(startConnectonHost), startConnectionPort));
+			}
+		}
+	}
+
+}
+
+#endif // UNITY_EDITOR

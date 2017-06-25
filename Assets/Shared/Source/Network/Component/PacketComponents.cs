@@ -1,7 +1,7 @@
 ﻿using Entitas;
 using System.Net;
 
-[Game]
+[Network]
 public class SendPacketComponent : IComponent {
 
 	public IPEndPoint target;
@@ -9,7 +9,7 @@ public class SendPacketComponent : IComponent {
 
 }
 
-[Game]
+[Network]
 public class RecvPacketComponent : IComponent {
 
 	public IPEndPoint source;

@@ -39,11 +39,11 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 
 	Queue<IncomingPacket> incomingPackets = new Queue<IncomingPacket>();
 
-	IGroup<GameEntity> recvGroup;
+	IGroup<NetworkEntity> recvGroup;
 
 	public RecvPacketSystem(Contexts ctxs, NetworkingFeature feature) {
 		this.feature = feature;
-		recvGroup = ctxs.game.GetGroup(GameMatcher.RecvPacket);
+		recvGroup = ctxs.network.GetGroup(NetworkMatcher.RecvPacket);
 	}
 
 	public void Initialize() {
@@ -62,10 +62,10 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 			incomingPackets.Clear();
 		}
 
-		var game = Contexts.sharedInstance.game;
+		var network = Contexts.sharedInstance.network;
 		foreach (var inc in arr) {
 			Debug.Log("Recv packet " + inc.packet.packetType);
-			game.CreateEntity()
+			network.CreateEntity()
 				.AddRecvPacket(inc.source, inc.packet);
 		}
 	}
@@ -80,6 +80,7 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 		while (true) {
 			var ep = new IPEndPoint(IPAddress.Any, NetworkConfig.port);
 
+			Debug.Log("Receiving");
 			var data = feature.udp.Receive(ref ep);
 
 			var incoming = new IncomingPacket {
@@ -97,25 +98,25 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 }
 
 
-public class SendPacketSystem : ReactiveSystem<GameEntity>, ICleanupSystem {
+public class SendPacketSystem : ReactiveSystem<NetworkEntity>, ICleanupSystem {
 	
 	NetworkingFeature feature;
-	IGroup<GameEntity> sendGroup;
+	IGroup<NetworkEntity> sendGroup;
 
-	public SendPacketSystem(Contexts ctxs, NetworkingFeature feature) : base(ctxs.game) {
+	public SendPacketSystem(Contexts ctxs, NetworkingFeature feature) : base(ctxs.network) {
 		this.feature = feature;
-		sendGroup = ctxs.game.GetGroup(GameMatcher.PingTest);
+		sendGroup = ctxs.network.GetGroup(NetworkMatcher.SendPacket);
 	}
 
-    protected override ICollector<GameEntity> GetTrigger(IContext<GameEntity> context) {
-        return context.CreateCollector(GameMatcher.SendPacket);
+    protected override ICollector<NetworkEntity> GetTrigger(IContext<NetworkEntity> context) {
+        return context.CreateCollector(NetworkMatcher.SendPacket);
     }
 
-    protected override bool Filter(GameEntity entity) {
+    protected override bool Filter(NetworkEntity entity) {
         return entity.hasSendPacket;
     }
 
-    protected override void Execute(List<GameEntity> entities) {
+    protected override void Execute(List<NetworkEntity> entities) {
         foreach (var ent in entities) {
 			var comp = ent.sendPacket;
 			feature.udp.Send(comp.packet.ToBytes(), comp.packet.data.Length, comp.target);

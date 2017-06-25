@@ -21,14 +21,16 @@ public class Packet {
 		byte[] dataBytes = new byte[bytes.Length - 1];
 		Array.Copy(bytes, 1, dataBytes, 0, bytes.Length - 1);
 
-		return new Packet {
-			packetType = packetType,
-			data = dataBytes
-		};
+		return new Packet(packetType, dataBytes);
 	}
 
 	public PacketType packetType;
 	public byte[] data;
+
+	public Packet(PacketType type, byte[] data) {
+		this.packetType = type;
+		this.data = data;
+	}
 
 	public byte[] ToBytes() {
 		byte[] ret = new byte[data.Length + 1];

@@ -13,11 +13,6 @@ public class ServerControl : MonoBehaviour {
 		var ctxs = Contexts.sharedInstance;
 		systems = new Systems()
 			.Add(new NetworkingFeature(ctxs));
-		
-		#if (!ENTITAS_DISABLE_VISUAL_DEBUGGING && UNITY_EDITOR)
-		var observer = new Entitas.VisualDebugging.Unity.ContextObserver(ctxs.game);
-		GameObject.DontDestroyOnLoad(observer.gameObject);
-		#endif
 
 		systems.Initialize();
 	}
@@ -31,3 +26,4 @@ public class ServerControl : MonoBehaviour {
 		systems.TearDown();
 	}
 }
+
