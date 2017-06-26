@@ -13,15 +13,17 @@ public static class NetworkComponentsLookup {
     public const int PingTest = 2;
     public const int RecvPacket = 3;
     public const int SendPacket = 4;
+    public const int ServerConnection = 5;
 
-    public const int TotalComponents = 5;
+    public const int TotalComponents = 6;
 
     public static readonly string[] componentNames = {
         "ClientConnection",
         "ClientStartConnection",
         "PingTest",
         "RecvPacket",
-        "SendPacket"
+        "SendPacket",
+        "ServerConnection"
     };
 
     public static readonly System.Type[] componentTypes = {
@@ -29,6 +31,7 @@ public static class NetworkComponentsLookup {
         typeof(ClientStartConnectionComponent),
         typeof(PingTestComponent),
         typeof(RecvPacketComponent),
-        typeof(SendPacketComponent)
+        typeof(SendPacketComponent),
+        typeof(ServerConnectionComponent)
     };
 }

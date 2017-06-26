@@ -7,10 +7,12 @@ using UnityEngine;
 public enum PacketType : byte {
 	Sync,
 	SyncAck,
+	Ack,
 	Fin,
 	FinAck,
 	Frame,
 	Input,
+	KeepAlive,
 	Ping // Debug-usage only
 }
 

@@ -64,7 +64,7 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 
 		var network = Contexts.sharedInstance.network;
 		foreach (var inc in arr) {
-			Debug.Log("Recv packet " + inc.packet.packetType);
+			Debug.Log("Recv packet " + inc.packet.packetType + "@" + inc.source);
 			network.CreateEntity()
 				.AddRecvPacket(inc.source, inc.packet);
 		}
@@ -80,7 +80,7 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 		while (true) {
 			var ep = new IPEndPoint(IPAddress.Any, NetworkConfig.port);
 
-			Debug.Log("Receiving");
+			// Debug.Log("Receiving");
 			var data = feature.udp.Receive(ref ep);
 
 			var incoming = new IncomingPacket {
@@ -90,7 +90,6 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 
 			lock (incomingPackets) {
 				incomingPackets.Enqueue(incoming);
-				Debug.Log("IncomingPackets size " + incomingPackets.Count);
 			}
 		}
 	}
@@ -98,34 +97,23 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 }
 
 
-public class SendPacketSystem : ReactiveSystem<NetworkEntity>, ICleanupSystem {
+public class SendPacketSystem : ICleanupSystem {
 	
 	NetworkingFeature feature;
 	IGroup<NetworkEntity> sendGroup;
 
-	public SendPacketSystem(Contexts ctxs, NetworkingFeature feature) : base(ctxs.network) {
+	public SendPacketSystem(Contexts ctxs, NetworkingFeature feature) {
 		this.feature = feature;
 		sendGroup = ctxs.network.GetGroup(NetworkMatcher.SendPacket);
 	}
 
-    protected override ICollector<NetworkEntity> GetTrigger(IContext<NetworkEntity> context) {
-        return context.CreateCollector(NetworkMatcher.SendPacket);
-    }
-
-    protected override bool Filter(NetworkEntity entity) {
-        return entity.hasSendPacket;
-    }
-
-    protected override void Execute(List<NetworkEntity> entities) {
-        foreach (var ent in entities) {
-			var comp = ent.sendPacket;
-			feature.udp.Send(comp.packet.ToBytes(), comp.packet.data.Length, comp.target);
-			Debug.Log("Send Packet " + comp.packet);
-		}
-    }
-
 	public void Cleanup() {
 		foreach (var ent in sendGroup.GetEntities()) {
+			var comp = ent.sendPacket;
+			var packetData = comp.packet.ToBytes();
+			feature.udp.Send(packetData, packetData.Length, comp.target);
+			Debug.Log("Send Packet " + comp.packet);
+
 			ent.Destroy();
 		}
 	}

@@ -12,7 +12,8 @@ public class ServerControl : MonoBehaviour {
 
 		var ctxs = Contexts.sharedInstance;
 		systems = new Systems()
-			.Add(new NetworkingFeature(ctxs));
+			.Add(new NetworkingFeature(ctxs))
+			.Add(new ServerConnectionFeature(ctxs));
 
 		systems.Initialize();
 	}

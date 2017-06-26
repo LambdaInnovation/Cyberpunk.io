@@ -11,24 +11,26 @@ public partial class NetworkEntity {
     public ClientConnectionComponent clientConnection { get { return (ClientConnectionComponent)GetComponent(NetworkComponentsLookup.ClientConnection); } }
     public bool hasClientConnection { get { return HasComponent(NetworkComponentsLookup.ClientConnection); } }
 
-    public void AddClientConnection(float newStateTime, float newPacketUnreceivedTime, System.Net.IPEndPoint newServerEP, float newTimeoutCounter, int newRetryTime, ClientConnectionComponent.State newState) {
+    public void AddClientConnection(float newStateTime, float newPacketUnreceivedTime, System.Net.IPEndPoint newServerEP, PlayerMetadata newPlayerMetadata, float newTimeoutCounter, int newRetryTime, ClientConnectionComponent.State newState) {
         var index = NetworkComponentsLookup.ClientConnection;
         var component = CreateComponent<ClientConnectionComponent>(index);
         component.stateTime = newStateTime;
         component.packetUnreceivedTime = newPacketUnreceivedTime;
         component.serverEP = newServerEP;
+        component.playerMetadata = newPlayerMetadata;
         component.timeoutCounter = newTimeoutCounter;
         component.retryTime = newRetryTime;
         component.state = newState;
         AddComponent(index, component);
     }
 
-    public void ReplaceClientConnection(float newStateTime, float newPacketUnreceivedTime, System.Net.IPEndPoint newServerEP, float newTimeoutCounter, int newRetryTime, ClientConnectionComponent.State newState) {
+    public void ReplaceClientConnection(float newStateTime, float newPacketUnreceivedTime, System.Net.IPEndPoint newServerEP, PlayerMetadata newPlayerMetadata, float newTimeoutCounter, int newRetryTime, ClientConnectionComponent.State newState) {
         var index = NetworkComponentsLookup.ClientConnection;
         var component = CreateComponent<ClientConnectionComponent>(index);
         component.stateTime = newStateTime;
         component.packetUnreceivedTime = newPacketUnreceivedTime;
         component.serverEP = newServerEP;
+        component.playerMetadata = newPlayerMetadata;
         component.timeoutCounter = newTimeoutCounter;
         component.retryTime = newRetryTime;
         component.state = newState;

@@ -11,17 +11,19 @@ public partial class NetworkEntity {
     public ClientStartConnectionComponent clientStartConnection { get { return (ClientStartConnectionComponent)GetComponent(NetworkComponentsLookup.ClientStartConnection); } }
     public bool hasClientStartConnection { get { return HasComponent(NetworkComponentsLookup.ClientStartConnection); } }
 
-    public void AddClientStartConnection(System.Net.IPEndPoint newServerEP) {
+    public void AddClientStartConnection(System.Net.IPEndPoint newServerEP, PlayerMetadata newPlayerMetadata) {
         var index = NetworkComponentsLookup.ClientStartConnection;
         var component = CreateComponent<ClientStartConnectionComponent>(index);
         component.serverEP = newServerEP;
+        component.playerMetadata = newPlayerMetadata;
         AddComponent(index, component);
     }
 
-    public void ReplaceClientStartConnection(System.Net.IPEndPoint newServerEP) {
+    public void ReplaceClientStartConnection(System.Net.IPEndPoint newServerEP, PlayerMetadata newPlayerMetadata) {
         var index = NetworkComponentsLookup.ClientStartConnection;
         var component = CreateComponent<ClientStartConnectionComponent>(index);
         component.serverEP = newServerEP;
+        component.playerMetadata = newPlayerMetadata;
         ReplaceComponent(index, component);
     }
 

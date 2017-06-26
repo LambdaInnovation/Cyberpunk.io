@@ -18,7 +18,7 @@ public class ClientControl : MonoBehaviour {
 		systems = new Systems()
 			.Add(new PingTestSystem(ctxs))
 			.Add(new NetworkingFeature(ctxs))
-			.Add(new ClientConnectionSystem(ctxs));
+			.Add(new ClientConnectionFeature(ctxs));
 
 		systems.Initialize();
 
@@ -27,7 +27,7 @@ public class ClientControl : MonoBehaviour {
 			.AddPingTest(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345), 1000, 1); */
 
 		ctxs.network.CreateEntity()
-			.AddClientConnection(0, 0, null, 0, 0, ClientConnectionComponent.State.Disconnected);
+			.AddComponent(NetworkComponentsLookup.ClientConnection, new ClientConnectionComponent());
 	}
 	
 	void FixedUpdate() {
@@ -46,8 +46,9 @@ public class ClientControl : MonoBehaviour {
 [CustomEditor(typeof(ClientControl))]
 [CanEditMultipleObjects]
 public class ClientControlEditor : Editor {
-	string startConnectonHost = "";
+	string startConnectonHost = "127.0.0.1";
 	int startConnectionPort = 12345;
+	string playerName = "Unnamed";
 	
 	public override void OnInspectorGUI() {
 		DrawDefaultInspector();
@@ -55,11 +56,18 @@ public class ClientControlEditor : Editor {
 		if (Application.isPlaying) {
 			startConnectonHost = EditorGUILayout.TextField("Host", startConnectonHost);
 			startConnectionPort = EditorGUILayout.IntField("Port", startConnectionPort);
+			playerName = EditorGUILayout.TextField("Player", playerName);
+
 
 			if (GUILayout.Button("Start Connection")) {
 				var ctx = Contexts.sharedInstance.network;
 				ctx.CreateEntity()
-					.AddClientStartConnection(new IPEndPoint(IPAddress.Parse(startConnectonHost), startConnectionPort));
+					.AddComponent(NetworkComponentsLookup.ClientStartConnection, new ClientStartConnectionComponent {
+						serverEP = new IPEndPoint(IPAddress.Parse(startConnectonHost), startConnectionPort),
+						playerMetadata = new PlayerMetadata {
+							playerName = playerName
+						}
+					});
 			}
 		}
 	}

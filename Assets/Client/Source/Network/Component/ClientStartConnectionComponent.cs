@@ -8,5 +8,6 @@ using System.Net;
 public class ClientStartConnectionComponent : IComponent {
 
 	public IPEndPoint serverEP;
+	public PlayerMetadata playerMetadata;
 
 }

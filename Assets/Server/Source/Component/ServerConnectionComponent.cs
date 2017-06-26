@@ -4,16 +4,21 @@ using Entitas;
 using System.Net;
 
 [Network]
-public class ClientConnectionComponent : IComponent {
+public class ServerConnectionComponent : IComponent {
 
-	public enum State { 
-		Disconnected,
-		Initalize,
+	public enum State {
+		Initialize,
+		
+		// Destroy the connection when passively disconnect.
+		// Goto TearDown when actively disconnect.
 		Connected,
+
+		// Semi-stable state waiting for another FinAck packet to fully close.
+		// or if the state time outs, destroy the connection.
 		TearDown
 	}
 
-	State state_ = State.Disconnected;
+	State state_ = State.Connected;
 	public State state {
 		get { return state_; }
 		set {
@@ -27,14 +32,11 @@ public class ClientConnectionComponent : IComponent {
 
 	public float stateTime = 0.0f;
 	public float packetUnreceivedTime = 0.0f;
-	public IPEndPoint serverEP; // This only changes in Disconnected state
+	public float timeoutCounter; // Generic counter for state timeout operation.
+	public int retryTime = 0; // Generic retry time counter for state operation.
+	public float keepAliveCounter;
 
 	public PlayerMetadata playerMetadata; // Player metadata.
-
-	public float timeoutCounter; // Generic counter for state timeout operation.
-	public float keepAliveCounter;
-	public int retryTime = 0; // Generic retry time counter for state operation.
+	public IPEndPoint clientEP; // Doesn't change after initialized.
 
 }
-
-
