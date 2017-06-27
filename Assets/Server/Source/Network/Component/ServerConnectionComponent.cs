@@ -39,4 +39,6 @@ public class ServerConnectionComponent : IComponent {
 	public PlayerMetadata playerMetadata; // Player metadata.
 	public IPEndPoint clientEP; // Doesn't change after initialized.
 
+	public GameEntity playerView;
+
 }

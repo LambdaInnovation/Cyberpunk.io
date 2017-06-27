@@ -8,19 +8,25 @@
 //------------------------------------------------------------------------------
 public partial class NetworkEntity {
 
-    static readonly ConnectionStartComponent connectionStartComponent = new ConnectionStartComponent();
+    public ConnectionStartComponent connectionStart { get { return (ConnectionStartComponent)GetComponent(NetworkComponentsLookup.ConnectionStart); } }
+    public bool hasConnectionStart { get { return HasComponent(NetworkComponentsLookup.ConnectionStart); } }
 
-    public bool isConnectionStart {
-        get { return HasComponent(NetworkComponentsLookup.ConnectionStart); }
-        set {
-            if (value != isConnectionStart) {
-                if (value) {
-                    AddComponent(NetworkComponentsLookup.ConnectionStart, connectionStartComponent);
-                } else {
-                    RemoveComponent(NetworkComponentsLookup.ConnectionStart);
-                }
-            }
-        }
+    public void AddConnectionStart(ServerConnectionComponent newConn) {
+        var index = NetworkComponentsLookup.ConnectionStart;
+        var component = CreateComponent<ConnectionStartComponent>(index);
+        component.conn = newConn;
+        AddComponent(index, component);
+    }
+
+    public void ReplaceConnectionStart(ServerConnectionComponent newConn) {
+        var index = NetworkComponentsLookup.ConnectionStart;
+        var component = CreateComponent<ConnectionStartComponent>(index);
+        component.conn = newConn;
+        ReplaceComponent(index, component);
+    }
+
+    public void RemoveConnectionStart() {
+        RemoveComponent(NetworkComponentsLookup.ConnectionStart);
     }
 }
 

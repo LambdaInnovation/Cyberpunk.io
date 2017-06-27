@@ -10,6 +10,8 @@ public class FrameRecvSystem : IExecuteSystem {
 
 	IGroup<NetworkEntity> packetGroup;
 
+	readonly Dictionary<int, GameEntity> syncedEntities = new Dictionary<int, GameEntity>();
+
 	public FrameRecvSystem(Contexts ctxs) {
 		gameCtx = ctxs.game;
 		networkCtx = ctxs.network;
@@ -41,7 +43,27 @@ public class FrameRecvSystem : IExecuteSystem {
 	}
 
 	void ApplyToGame(FramePacket packet) {
-		Debug.Log("Recv " + packet);
+		foreach (var entityData in packet.entities) {
+			if (!syncedEntities.ContainsKey(entityData.entityID)) {
+				var ent = gameCtx.CreateEntity();
+				ent.AddFrameSync(entityData.entityID);
+				syncedEntities.Add(entityData.entityID, ent);
+			}
+			var entity = syncedEntities[entityData.entityID];
+			foreach (var compData in entityData.components) {
+				var compID = compData.componentID;
+				if (!entity.HasComponent(compID)) {
+					var ctor = GameComponentsLookup.componentTypes[compID].GetConstructor(new System.Type[0]);
+					entity.AddComponent(compID, (IComponent) ctor.Invoke(new object[0]));
+				}
+
+				var comp = (IFrameSyncComponent) entity.GetComponent(compID);
+				using (var stream = new MemoryStream(compData.data)) {
+					var reader = new BinaryReader(stream);
+					comp.ReadBytes(reader);
+				}
+ 			}
+		}
 	}
 }
 

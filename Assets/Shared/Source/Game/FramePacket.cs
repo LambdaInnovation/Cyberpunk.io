@@ -27,6 +27,7 @@ public class FramePacket {
 			edata.entityID = reader.ReadUInt16();
 
 			var componentCount = reader.ReadByte();
+			edata.components = new ComponentSyncData[componentCount];
 			for (int j = 0; j < componentCount; ++j) {
 				var cdata = new ComponentSyncData();
 				edata.components[i] = cdata;

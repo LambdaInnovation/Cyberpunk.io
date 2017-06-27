@@ -50,7 +50,7 @@ public class ServerConnectionSystem : IExecuteSystem {
 
 			var finAckPackets2 = myPackets.Where(recv => recv.packet.packetType == PacketType.FinAck).Count();
 			if (finAckPackets2 > 0) {
-				Debug.Log("FinAct at " + conn.state);
+				Debug.Log("FinAck at " + conn.state);
 			}
 		
 			switch (conn.state) {
@@ -89,7 +89,7 @@ public class ServerConnectionSystem : IExecuteSystem {
 					if (finPackets > 0) {
 						ctx.CreateEntity()
 							.AddSendPacket(conn.clientEP, new Packet(PacketType.FinAck, new byte[0]));
-						entity.Destroy();
+						CloseConnection(entity);
 					}
 
 				} break;
@@ -97,7 +97,7 @@ public class ServerConnectionSystem : IExecuteSystem {
 					// Resend Fin
 					if (conn.timeoutCounter > TearDownTimeOut) {
 						if (conn.retryTime > MaxTearDownRetry) {
-							entity.Destroy();
+							CloseConnection(entity);
 						} else {
 							++conn.retryTime;
 							conn.timeoutCounter = 0;
@@ -109,7 +109,7 @@ public class ServerConnectionSystem : IExecuteSystem {
 					var finAckPackets = myPackets.Where(recv => recv.packet.packetType == PacketType.FinAck).Count();
 
 					if (finAckPackets > 0) {
-						entity.Destroy();
+						CloseConnection(entity);
 					}
 
 				} break;
@@ -128,6 +128,14 @@ public class ServerConnectionSystem : IExecuteSystem {
 				target = conn.clientEP,
 				packet = new Packet(PacketType.Fin, new byte[0])
 			});
+	}
+
+	void CloseConnection(NetworkEntity entity) {
+		var evt = ctx.CreateEntity();
+		evt.AddConnectionEnd(entity.serverConnection);
+		evt.isCleanup = true;
+
+		entity.Destroy();
 	}
 }
 
@@ -173,6 +181,10 @@ public class ServerStartConnectionSystem : ReactiveSystem<NetworkEntity> {
 
 				ctx.CreateEntity()
 					.AddComponent(NetworkComponentsLookup.ServerConnection, serverConn);
+
+				var e = ctx.CreateEntity();
+				e.AddConnectionStart(serverConn);
+				e.isCleanup = true;
 			}
 			
 			// Send SyncAck packet to client

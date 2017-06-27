@@ -16,6 +16,7 @@ public class ClientControl : MonoBehaviour {
 
 		var ctxs = Contexts.sharedInstance;
 		systems = new Systems()
+			.Add(new CleanupSystem(ctxs))
 			.Add(new PingTestSystem(ctxs))
 			.Add(new NetworkingFeature(ctxs))
 			.Add(new ClientConnectionFeature(ctxs))

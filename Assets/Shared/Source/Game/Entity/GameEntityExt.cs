@@ -27,9 +27,9 @@ public static class GameEntityExt {
 		List<ComponentAndID> list = new List<ComponentAndID>();
 		for (int i = 0; i < syncComponentIndices.Length; ++i) {
 			var index = syncComponentIndices[i];
-			if (e.HasComponent(i)) {
+			if (e.HasComponent(index)) {
 				list.Add(new ComponentAndID { 
-					component = (IFrameSyncComponent) e.GetComponent(i), index = i 
+					component = (IFrameSyncComponent) e.GetComponent(index), index = index
 				});
 			}
 		}

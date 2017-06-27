@@ -8,19 +8,25 @@
 //------------------------------------------------------------------------------
 public partial class NetworkEntity {
 
-    static readonly ConnectionEndComponent connectionEndComponent = new ConnectionEndComponent();
+    public ConnectionEndComponent connectionEnd { get { return (ConnectionEndComponent)GetComponent(NetworkComponentsLookup.ConnectionEnd); } }
+    public bool hasConnectionEnd { get { return HasComponent(NetworkComponentsLookup.ConnectionEnd); } }
 
-    public bool isConnectionEnd {
-        get { return HasComponent(NetworkComponentsLookup.ConnectionEnd); }
-        set {
-            if (value != isConnectionEnd) {
-                if (value) {
-                    AddComponent(NetworkComponentsLookup.ConnectionEnd, connectionEndComponent);
-                } else {
-                    RemoveComponent(NetworkComponentsLookup.ConnectionEnd);
-                }
-            }
-        }
+    public void AddConnectionEnd(ServerConnectionComponent newConn) {
+        var index = NetworkComponentsLookup.ConnectionEnd;
+        var component = CreateComponent<ConnectionEndComponent>(index);
+        component.conn = newConn;
+        AddComponent(index, component);
+    }
+
+    public void ReplaceConnectionEnd(ServerConnectionComponent newConn) {
+        var index = NetworkComponentsLookup.ConnectionEnd;
+        var component = CreateComponent<ConnectionEndComponent>(index);
+        component.conn = newConn;
+        ReplaceComponent(index, component);
+    }
+
+    public void RemoveConnectionEnd() {
+        RemoveComponent(NetworkComponentsLookup.ConnectionEnd);
     }
 }
 
