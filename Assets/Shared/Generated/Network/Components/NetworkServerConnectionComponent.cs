@@ -11,26 +11,28 @@ public partial class NetworkEntity {
     public ServerConnectionComponent serverConnection { get { return (ServerConnectionComponent)GetComponent(NetworkComponentsLookup.ServerConnection); } }
     public bool hasServerConnection { get { return HasComponent(NetworkComponentsLookup.ServerConnection); } }
 
-    public void AddServerConnection(float newStateTime, float newPacketUnreceivedTime, float newTimeoutCounter, int newRetryTime, PlayerMetadata newPlayerMetadata, System.Net.IPEndPoint newClientEP, ServerConnectionComponent.State newState) {
+    public void AddServerConnection(float newStateTime, float newPacketUnreceivedTime, float newTimeoutCounter, int newRetryTime, float newKeepAliveCounter, PlayerMetadata newPlayerMetadata, System.Net.IPEndPoint newClientEP, ServerConnectionComponent.State newState) {
         var index = NetworkComponentsLookup.ServerConnection;
         var component = CreateComponent<ServerConnectionComponent>(index);
         component.stateTime = newStateTime;
         component.packetUnreceivedTime = newPacketUnreceivedTime;
         component.timeoutCounter = newTimeoutCounter;
         component.retryTime = newRetryTime;
+        component.keepAliveCounter = newKeepAliveCounter;
         component.playerMetadata = newPlayerMetadata;
         component.clientEP = newClientEP;
         component.state = newState;
         AddComponent(index, component);
     }
 
-    public void ReplaceServerConnection(float newStateTime, float newPacketUnreceivedTime, float newTimeoutCounter, int newRetryTime, PlayerMetadata newPlayerMetadata, System.Net.IPEndPoint newClientEP, ServerConnectionComponent.State newState) {
+    public void ReplaceServerConnection(float newStateTime, float newPacketUnreceivedTime, float newTimeoutCounter, int newRetryTime, float newKeepAliveCounter, PlayerMetadata newPlayerMetadata, System.Net.IPEndPoint newClientEP, ServerConnectionComponent.State newState) {
         var index = NetworkComponentsLookup.ServerConnection;
         var component = CreateComponent<ServerConnectionComponent>(index);
         component.stateTime = newStateTime;
         component.packetUnreceivedTime = newPacketUnreceivedTime;
         component.timeoutCounter = newTimeoutCounter;
         component.retryTime = newRetryTime;
+        component.keepAliveCounter = newKeepAliveCounter;
         component.playerMetadata = newPlayerMetadata;
         component.clientEP = newClientEP;
         component.state = newState;

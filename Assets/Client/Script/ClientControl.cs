@@ -18,7 +18,9 @@ public class ClientControl : MonoBehaviour {
 		systems = new Systems()
 			.Add(new PingTestSystem(ctxs))
 			.Add(new NetworkingFeature(ctxs))
-			.Add(new ClientConnectionFeature(ctxs));
+			.Add(new ClientConnectionFeature(ctxs))
+			.Add(new ClientFrameSyncFeature(ctxs))
+			.Add(new ViewFeature(ctxs));
 
 		systems.Initialize();
 

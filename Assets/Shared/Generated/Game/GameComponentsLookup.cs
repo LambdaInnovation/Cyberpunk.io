@@ -8,15 +8,24 @@
 //------------------------------------------------------------------------------
 public static class GameComponentsLookup {
 
+    public const int FrameSync = 0;
+    public const int ServerSyncInfo = 1;
+    public const int Sprite = 2;
+    public const int View = 3;
 
-
-    public const int TotalComponents = 0;
+    public const int TotalComponents = 4;
 
     public static readonly string[] componentNames = {
-
+        "FrameSync",
+        "ServerSyncInfo",
+        "Sprite",
+        "View"
     };
 
     public static readonly System.Type[] componentTypes = {
-
+        typeof(FrameSyncComponent),
+        typeof(ServerSyncInfoComponent),
+        typeof(SpriteComponent),
+        typeof(ViewComponent)
     };
 }

@@ -10,16 +10,20 @@ public static class NetworkComponentsLookup {
 
     public const int ClientConnection = 0;
     public const int ClientStartConnection = 1;
-    public const int PingTest = 2;
-    public const int RecvPacket = 3;
-    public const int SendPacket = 4;
-    public const int ServerConnection = 5;
+    public const int ConnectionEnd = 2;
+    public const int ConnectionStart = 3;
+    public const int PingTest = 4;
+    public const int RecvPacket = 5;
+    public const int SendPacket = 6;
+    public const int ServerConnection = 7;
 
-    public const int TotalComponents = 6;
+    public const int TotalComponents = 8;
 
     public static readonly string[] componentNames = {
         "ClientConnection",
         "ClientStartConnection",
+        "ConnectionEnd",
+        "ConnectionStart",
         "PingTest",
         "RecvPacket",
         "SendPacket",
@@ -29,6 +33,8 @@ public static class NetworkComponentsLookup {
     public static readonly System.Type[] componentTypes = {
         typeof(ClientConnectionComponent),
         typeof(ClientStartConnectionComponent),
+        typeof(ConnectionEndComponent),
+        typeof(ConnectionStartComponent),
         typeof(PingTestComponent),
         typeof(RecvPacketComponent),
         typeof(SendPacketComponent),

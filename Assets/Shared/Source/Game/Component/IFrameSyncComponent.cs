@@ -6,8 +6,8 @@ using System.IO;
 // Interface for components that are to be serialized over network via frame .
 public interface IFrameSyncComponent : IComponent {
 
-    void WriteBytes(Stream stream);
+    void WriteBytes(BinaryWriter writer);
 
-    void ReadBytes(Stream stream);
+    void ReadBytes(BinaryReader reader);
 
 }
