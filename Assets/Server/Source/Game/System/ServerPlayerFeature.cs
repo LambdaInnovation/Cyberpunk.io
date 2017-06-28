@@ -16,7 +16,8 @@ public class ServerAddPlayerSystem : ReactiveSystem<NetworkEntity> {
 
     protected override void Execute(List<NetworkEntity> entities) {
         foreach (var e in entities) {
-            var conn = e.connectionStart.conn;
+            Debug.Log("Create player for " + e.connectionEstablished.conn.playerMetadata);
+            var conn = e.connectionEstablished.conn;
 
             var entity = gameCtx.CreateEntity();
             entity.AddFrameSync(0);
@@ -27,11 +28,11 @@ public class ServerAddPlayerSystem : ReactiveSystem<NetworkEntity> {
     }
 
     protected override bool Filter(NetworkEntity entity) {
-        return entity.hasConnectionStart;
+        return entity.hasConnectionEstablished;
     }
 
     protected override ICollector<NetworkEntity> GetTrigger(IContext<NetworkEntity> context) {
-        return context.CreateCollector(NetworkMatcher.ConnectionStart);
+        return context.CreateCollector(NetworkMatcher.ConnectionEstablished);
     }
 }
 
@@ -41,7 +42,9 @@ public class ServerRemovePlayerSystem : ReactiveSystem<NetworkEntity> {
 
     protected override void Execute(List<NetworkEntity> entities) {
         foreach (var ent in entities) {
-            ent.connectionEnd.conn.playerView.Destroy();
+            if (ent.connectionEnd.conn.playerView != null) {
+                ent.connectionEnd.conn.playerView.Destroy();
+            }
         }
     }
 

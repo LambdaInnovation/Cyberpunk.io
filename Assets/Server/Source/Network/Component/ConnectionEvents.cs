@@ -13,3 +13,10 @@ public class ConnectionEndComponent : IComponent {
     public ServerConnectionComponent conn;
 
 }
+
+[Network]
+public class ConnectionEstablishedComponent : IComponent {
+
+    public ServerConnectionComponent conn;
+
+}

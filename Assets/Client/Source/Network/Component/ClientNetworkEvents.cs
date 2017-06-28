@@ -11,3 +11,9 @@ public class ClientStartConnectionComponent : IComponent {
 	public PlayerMetadata playerMetadata;
 
 }
+
+// Used to issue a disconnect.
+[Network]
+public class ClientDisconnectComponent : IComponent {
+
+}

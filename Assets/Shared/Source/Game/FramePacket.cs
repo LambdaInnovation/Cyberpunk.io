@@ -30,7 +30,7 @@ public class FramePacket {
 			edata.components = new ComponentSyncData[componentCount];
 			for (int j = 0; j < componentCount; ++j) {
 				var cdata = new ComponentSyncData();
-				edata.components[i] = cdata;
+				edata.components[j] = cdata;
 
 				cdata.componentID = reader.ReadByte();
 				var dataSize = reader.ReadUInt16();

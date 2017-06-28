@@ -10,37 +10,46 @@ public static class NetworkComponentsLookup {
 
     public const int Cleanup = 0;
     public const int ClientConnection = 1;
-    public const int ClientStartConnection = 2;
-    public const int ConnectionEnd = 3;
-    public const int ConnectionStart = 4;
-    public const int PingTest = 5;
-    public const int RecvPacket = 6;
-    public const int SendPacket = 7;
-    public const int ServerConnection = 8;
+    public const int ClientDisconnect = 2;
+    public const int ClientStartConnection = 3;
+    public const int ConnectionEnd = 4;
+    public const int ConnectionEstablished = 5;
+    public const int ConnectionStart = 6;
+    public const int PingTest = 7;
+    public const int RecvPacket = 8;
+    public const int SendPacket = 9;
+    public const int ServerConnection = 10;
+    public const int ServerConnectionInfo = 11;
 
-    public const int TotalComponents = 9;
+    public const int TotalComponents = 12;
 
     public static readonly string[] componentNames = {
         "Cleanup",
         "ClientConnection",
+        "ClientDisconnect",
         "ClientStartConnection",
         "ConnectionEnd",
+        "ConnectionEstablished",
         "ConnectionStart",
         "PingTest",
         "RecvPacket",
         "SendPacket",
-        "ServerConnection"
+        "ServerConnection",
+        "ServerConnectionInfo"
     };
 
     public static readonly System.Type[] componentTypes = {
         typeof(CleanupComponent),
         typeof(ClientConnectionComponent),
+        typeof(ClientDisconnectComponent),
         typeof(ClientStartConnectionComponent),
         typeof(ConnectionEndComponent),
+        typeof(ConnectionEstablishedComponent),
         typeof(ConnectionStartComponent),
         typeof(PingTestComponent),
         typeof(RecvPacketComponent),
         typeof(SendPacketComponent),
-        typeof(ServerConnectionComponent)
+        typeof(ServerConnectionComponent),
+        typeof(ServerConnectionInfoComponent)
     };
 }

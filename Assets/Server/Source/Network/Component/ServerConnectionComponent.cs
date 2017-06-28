@@ -18,7 +18,7 @@ public class ServerConnectionComponent : IComponent {
 		TearDown
 	}
 
-	State state_ = State.Connected;
+	State state_ = State.Initialize;
 	public State state {
 		get { return state_; }
 		set {

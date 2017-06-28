@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Entitas;
 
+[Game]
 public class SpriteComponent : IComponent {
 
 	public Sprite sprite;

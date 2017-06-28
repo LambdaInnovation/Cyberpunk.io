@@ -9,6 +9,9 @@ using UnityEditor;
 #endif
 
 public class ClientControl : MonoBehaviour {
+
+	public PlayerSettings playerSettings;
+
 	Systems systems;
 
 	void Start () {
@@ -16,18 +19,20 @@ public class ClientControl : MonoBehaviour {
 
 		var ctxs = Contexts.sharedInstance;
 		systems = new Systems()
+			// Network
 			.Add(new CleanupSystem(ctxs))
 			.Add(new PingTestSystem(ctxs))
 			.Add(new NetworkingFeature(ctxs))
 			.Add(new ClientConnectionFeature(ctxs))
+			// Game
 			.Add(new ClientFrameSyncFeature(ctxs))
+			.Add(new ClientPlayerFeature(ctxs, playerSettings))
 			.Add(new ViewFeature(ctxs));
 
 		systems.Initialize();
 
-		/*
-		ctxs.network.CreateEntity()
-			.AddPingTest(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345), 1000, 1); */
+		
+		// ctxs.network.CreateEntity().AddPingTest(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 12345), 1000, 1); 
 
 		ctxs.network.CreateEntity()
 			.AddComponent(NetworkComponentsLookup.ClientConnection, new ClientConnectionComponent());
@@ -61,9 +66,8 @@ public class ClientControlEditor : Editor {
 			startConnectionPort = EditorGUILayout.IntField("Port", startConnectionPort);
 			playerName = EditorGUILayout.TextField("Player", playerName);
 
-
+			var ctx = Contexts.sharedInstance.network;
 			if (GUILayout.Button("Start Connection")) {
-				var ctx = Contexts.sharedInstance.network;
 				ctx.CreateEntity()
 					.AddComponent(NetworkComponentsLookup.ClientStartConnection, new ClientStartConnectionComponent {
 						serverEP = new IPEndPoint(IPAddress.Parse(startConnectonHost), startConnectionPort),
@@ -71,6 +75,12 @@ public class ClientControlEditor : Editor {
 							playerName = playerName
 						}
 					});
+			}
+
+			if (GUILayout.Button("Disconnect")) {
+				var ent = ctx.CreateEntity();
+				ent.isClientDisconnect = true;
+				ent.isCleanup = true;
 			}
 		}
 	}

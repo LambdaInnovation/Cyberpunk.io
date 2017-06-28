@@ -5,6 +5,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Net;
 using Entitas;
+using System;
 
 public class NetworkingFeature : Feature {
 	public UdpClient udp {
@@ -28,7 +29,7 @@ public class NetworkingFeature : Feature {
 
 }
 
-public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSystem, ICleanupSystem {
+public class RecvPacketSystem : IInitializeSystem, IExecuteSystem, ICleanupSystem {
 	struct IncomingPacket {
 		public IPEndPoint source;
 		public Packet packet;
@@ -47,12 +48,7 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 	}
 
 	public void Initialize() {
-		thread = new Thread(new ThreadStart(ListenThreadFunc));
-		thread.Start();
-	}
-
-	public void TearDown() {
-		thread.Abort();
+		Receive();
 	}
 
 	public void Execute() {
@@ -76,22 +72,24 @@ public class RecvPacketSystem : IInitializeSystem, ITearDownSystem, IExecuteSyst
 		}
 	}
 
-	void ListenThreadFunc() {
-		while (true) {
-			var ep = new IPEndPoint(IPAddress.Any, NetworkConfig.port);
+	void Receive() {
+		feature.udp.BeginReceive(ReceiveCallback, null);
+	}
 
-			// Debug.Log("Receiving");
-			var data = feature.udp.Receive(ref ep);
+	void ReceiveCallback(IAsyncResult result) {
+		var ep = new IPEndPoint(IPAddress.Any, 0);
+		var data = feature.udp.EndReceive(result, ref ep);
 
-			var incoming = new IncomingPacket {
-				source = ep,
-				packet = Packet.FromBytes(data)
-			};
+		var incoming = new IncomingPacket {
+			source = ep,
+			packet = Packet.FromBytes(data)
+		};
 
-			lock (incomingPackets) {
-				incomingPackets.Enqueue(incoming);
-			}
+		lock (incomingPackets) {
+			incomingPackets.Enqueue(incoming);
 		}
+
+		Receive();
 	}
 
 }

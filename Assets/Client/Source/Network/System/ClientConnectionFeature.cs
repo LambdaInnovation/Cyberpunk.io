@@ -27,6 +27,11 @@ public class ClientConnectionSystem : IExecuteSystem {
 		connectionGroup = ctx.GetGroup(NetworkMatcher.ClientConnection);
 		startConnectionGroup = ctx.GetGroup(NetworkMatcher.ClientStartConnection);
 		recvPacketGroup = ctx.GetGroup(NetworkMatcher.RecvPacket);
+		
+		ctx.GetGroup(NetworkMatcher.ClientDisconnect).OnEntityAdded += (g, ent, index, component) => {
+			var conn = connectionGroup.GetSingleEntity().clientConnection;
+			Disconnect(conn);
+		};
 	}
 
 	public void Execute() {
@@ -74,14 +79,19 @@ public class ClientConnectionSystem : IExecuteSystem {
 			}
 
 			// React to SyncAck packet
-			var syncAckPackets = myPackets
+			var syncAckPacket = myPackets
 				.Where(e => e.packet.packetType == PacketType.SyncAck)
-				.Count();
+				.ElementAtOrDefault(0);
 
-			if (syncAckPackets > 0) {
+			if (syncAckPacket != null) {
 				conn.state = State.Connected;
+				var playerID = BitConverter.ToUInt16(syncAckPacket.packet.data, 0);
+
+				// Rewrite player ID
+				conn.playerMetadata.playerID = playerID;
+
 				// Send Ack
-				SendAckPacket(conn);
+				SendAckPacket(conn, playerID);
 			}
 		} break;
 		case State.Connected: {
@@ -141,9 +151,9 @@ public class ClientConnectionSystem : IExecuteSystem {
 			.AddSendPacket(conn.serverEP, new Packet(PacketType.Sync, metadataBytes));
 	}
 
-	void SendAckPacket(ClientConnectionComponent conn) {
+	void SendAckPacket(ClientConnectionComponent conn, ushort playerID) {
 		ctx.CreateEntity()
-			.AddSendPacket(conn.serverEP, new Packet(PacketType.Ack, new byte[0]));
+			.AddSendPacket(conn.serverEP, new Packet(PacketType.Ack, BitConverter.GetBytes(playerID)));
 	}
 
 	void StartTearDown(ClientConnectionComponent conn) {
@@ -159,6 +169,13 @@ public class ClientConnectionSystem : IExecuteSystem {
 				target = conn.serverEP,
 				packet = new Packet(PacketType.Fin, new byte[0])
 			});
+	}
+
+	void Disconnect(ClientConnectionComponent conn) {
+		if (conn.state == State.Connected || conn.state == State.Initalize) {
+			SendFinPacket(conn);
+			conn.state = State.TearDown;
+		}
 	}
 
 }

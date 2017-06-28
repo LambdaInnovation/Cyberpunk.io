@@ -9,7 +9,7 @@ using UnityEngine;
 
 using State = ServerConnectionComponent.State;
 
-public class ServerConnectionSystem : IExecuteSystem {
+public class ServerConnectionSystem : IInitializeSystem,IExecuteSystem {
 
 	const float
 		HandshakeTimeout = 2.0f,
@@ -25,10 +25,18 @@ public class ServerConnectionSystem : IExecuteSystem {
 	readonly IGroup<NetworkEntity> serverConnGroup;
 	readonly IGroup<NetworkEntity> packetGroup;
 
+	ServerConnectionInfoComponent connectionInfo;
+
 	public ServerConnectionSystem(Contexts ctxs) {
 		ctx = ctxs.network;
 		serverConnGroup = ctx.GetGroup(NetworkMatcher.ServerConnection);
 		packetGroup = ctx.GetGroup(NetworkMatcher.RecvPacket);
+	}
+
+	public void Initialize() {
+		var ent = ctx.CreateEntity();
+		ent.AddServerConnectionInfo(0);
+		connectionInfo = ent.serverConnectionInfo;
 	}
 
 	public void Execute() {
@@ -49,9 +57,6 @@ public class ServerConnectionSystem : IExecuteSystem {
 			}
 
 			var finAckPackets2 = myPackets.Where(recv => recv.packet.packetType == PacketType.FinAck).Count();
-			if (finAckPackets2 > 0) {
-				Debug.Log("FinAck at " + conn.state);
-			}
 		
 			switch (conn.state) {
 				case State.Initialize: {
@@ -61,10 +66,19 @@ public class ServerConnectionSystem : IExecuteSystem {
 					}
 
 					// Handle Ack
-					var ackPackets = myPackets.Where(packet => packet.packet.packetType == PacketType.Ack).Count();
+					var ackPacket = myPackets.Where(packet => packet.packet.packetType == PacketType.Ack).ElementAtOrDefault(0);
 					
-					if (ackPackets > 0) {
+					if (ackPacket != null) {
 						conn.state = State.Connected;
+
+						// Update player ID
+						var playerID = BitConverter.ToUInt16(ackPacket.packet.data, 0);
+						conn.playerMetadata.playerID = playerID;
+						
+						// Notify of connection establish
+						var ent = ctx.CreateEntity();
+						ent.isCleanup = true;
+						ent.AddConnectionEstablished(conn);
 					}
 					
 				} break;
@@ -146,10 +160,14 @@ public class ServerStartConnectionSystem : ReactiveSystem<NetworkEntity> {
 
 	NetworkContext ctx;
 
+	IGroup<NetworkEntity> connInfoGroup;
+
 	public ServerStartConnectionSystem(Contexts ctxs) : base(ctxs.network) {
 		serverConnectionGroup = ctxs.network.GetGroup(NetworkMatcher.ServerConnection);
 
 		ctx = Contexts.sharedInstance.network;
+
+		connInfoGroup = ctx.GetGroup(NetworkMatcher.ServerConnectionInfo);
 	}
 
     protected override void Execute(List<NetworkEntity> entities) {
@@ -158,6 +176,8 @@ public class ServerStartConnectionSystem : ReactiveSystem<NetworkEntity> {
 			var comp = sg.serverConnection;
 			connDict.Add(comp.clientEP, comp);
 		}
+
+		var connInfo = connInfoGroup.GetSingleEntity().serverConnectionInfo;
 
 		foreach (var entity in entities) {
 			var comp = entity.recvPacket;
@@ -175,7 +195,6 @@ public class ServerStartConnectionSystem : ReactiveSystem<NetworkEntity> {
 
 				using (var reader = new BinaryReader(
 					new MemoryStream(comp.packet.data))) {
-					Debug.Log("Packet length " + comp.packet.data.Length);
 					serverConn.playerMetadata.ReadBytes(reader);
 				}
 
@@ -186,12 +205,14 @@ public class ServerStartConnectionSystem : ReactiveSystem<NetworkEntity> {
 				e.AddConnectionStart(serverConn);
 				e.isCleanup = true;
 			}
-			
+
+			var playerID = connInfo.currentPlayerID++;
+
 			// Send SyncAck packet to client
 			ctx.CreateEntity()
 				.AddComponent(NetworkComponentsLookup.SendPacket, new SendPacketComponent {
 					target = comp.source,
-					packet = new Packet(PacketType.SyncAck, new byte[0])
+					packet = new Packet(PacketType.SyncAck, BitConverter.GetBytes(playerID))
 				});
 		}
     }
